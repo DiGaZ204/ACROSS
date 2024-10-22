@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>崩鐵周回腳本</title>
+    <style>
+        @keyframes moveBackground {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            background-image: url('./photoForStar_Rail/back.jpg');
+            background-size: cover;
+            background-position: center;
+            animation: moveBackground 20s linear infinite;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        form {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        select, button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #subChoiceDiv {
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <form id="myForm">
+        <h2>AUTO腳本</h2>
+        <label for="choice">關卡類型:</label>
+        <select id="choice" name="choice" onchange="toggleSubChoice()">
+            <option value="" disabled selected>請選擇</option>
+            <option value="1">1.飾品提取</option>
+            <option value="2">2.擬造花萼(赤)</option>
+        </select>
+
+        <div id="subChoiceDiv" style="display: none;">
+            <label for="sub_choice">選擇:</label>
+            <select id="sub_choice" name="sub_choice">
+                <option value="" disabled selected>請選擇</option>
+                <option value="1">1.蠹役飢腸</option>
+                <option value="2">2.永恆笑劇</option>
+                <option value="3">3.伴你入眠</option>
+                <option value="4">4.天劍如雨</option>
+                <option value="5">5.孽果盤生</option>
+                <option value="6">6.百年凍土</option>
+                <option value="7">7.溫柔話語</option>
+                <option value="8">8.浴火鋼心</option>
+                <option value="9">9.堅城不倒</option>
+            </select>
+        </div>
+
+        <button type="button" onclick="submitForm()">提交</button>
+    </form>
+
+    <script>
+        function toggleSubChoice() {
+            const choice = document.getElementById("choice").value;
+            const subChoiceDiv = document.getElementById("subChoiceDiv");
+            
+            if (choice === "1") {
+                subChoiceDiv.style.display = "block";  // 顯示進一步選擇
+            } else {
+                subChoiceDiv.style.display = "none";  // 隱藏進一步選擇
+            }
+        }
+
+        async function submitForm() {
+            const formData = new FormData();
+            const choice = document.getElementById("choice").value;
+            const subChoice = document.getElementById("sub_choice").value;
+
+            formData.append("choice", choice);
+
+            // 只有選擇1時才傳送進一步選擇
+            if (choice === "1") {
+                formData.append("sub_choice", subChoice);
+            }
+
+            const response = await fetch("http://127.0.0.1:8000/process/", {
+                method: "POST",
+                body: formData,
+            });
+
+            const result = await response.json();
+            console.log(result);  // 在瀏覽器控制台記錄結果
+            alert(`選擇: ${result.selected_choice}, 進一步選擇: ${result.selected_sub_choice || '無'}`);
+        }
+    </script>
+</body>
+</html>
